@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PlugInPackageMetaData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <PackageName>Aml.Editor.Plugin.SvgExport</PackageName>
+  <DisplayName>SvgExport</DisplayName>
+  <Version>0.8.1</Version>
+  <Author>Hamied Nabizada</Author>
+  <Description>Export editor views as SVG, PDF or PNG that look exactly like the editor, for papers and slides. Shortcuts: Ctrl+Shift+E complete tree, Ctrl+Shift+K tree to clipboard, Ctrl+Shift+W whole window, Ctrl+Shift+R drag a region. Options in the SvgExport panel.</Description>
+  <MinimumEditorVersion>6.4.0.0</MinimumEditorVersion>
+</PlugInPackageMetaData>

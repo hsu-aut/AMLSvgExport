@@ -1,0 +1,13 @@
+# Text files keep LF in the repository; Windows checkouts get CRLF where the
+# tooling expects it. Without this the sources arrive with mixed endings, which
+# makes a diff of a one-line change look like a rewrite.
+* text=auto eol=lf
+
+*.sln       text eol=crlf
+*.csproj    text eol=crlf
+*.xaml      text eol=crlf
+*.cs        text eol=crlf
+
+*.svg       text eol=lf
+*.png       binary
+*.nupkg     binary
