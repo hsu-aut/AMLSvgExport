@@ -5,6 +5,6 @@
   <DisplayName>SvgExport</DisplayName>
   <Version>0.8.1</Version>
   <Author>Hamied Nabizada</Author>
-  <Description>Export editor views as SVG, PDF or PNG that look exactly like the editor, for papers and slides. Shortcuts: Ctrl+Shift+E complete tree, Ctrl+Shift+K tree to clipboard, Ctrl+Shift+W whole window, Ctrl+Shift+R drag a region. Options in the SvgExport panel.</Description>
+  <Description>AutomationML Editor plugin that exports trees, attribute panels, the window or any region as vector graphics (SVG, PDF, PNG) for papers and slides. Shortcuts: Ctrl+Shift+E complete tree, Ctrl+Shift+K tree to clipboard, Ctrl+Shift+W whole window, Ctrl+Shift+R drag a region. Options in the SvgExport panel.</Description>
   <MinimumEditorVersion>6.4.0.0</MinimumEditorVersion>
 </PlugInPackageMetaData>

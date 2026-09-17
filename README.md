@@ -2,12 +2,12 @@
 
 Vector export of AutomationML Editor views.
 
-A plugin for the AutomationML Editor that exports what the editor shows as SVG, and
-optionally as PDF or PNG: complete InstanceHierarchies and libraries including rows scrolled
-out of view, attribute panels with their details, the whole window, or any region, including
-diagrams of other plugins. The result looks exactly like the editor, because it is taken from
-what the editor actually renders, and it stays editable: text is text and every element is a
-separate object. It is meant for papers, slides and documentation, instead of screenshots.
+A plugin for the AutomationML Editor that exports trees, attribute panels, the window or any
+region as vector graphics: complete InstanceHierarchies and libraries including rows scrolled
+out of view, attribute panels with their details, and diagrams of other plugins, as SVG and
+optionally PDF or PNG. The picture is taken from what the editor actually renders, and it
+stays editable: text is text and every element is a separate object. It is meant for papers,
+slides and documentation, instead of screenshots.
 
 ## Requirements
 

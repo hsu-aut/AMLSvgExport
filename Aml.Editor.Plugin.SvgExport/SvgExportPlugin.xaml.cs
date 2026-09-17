@@ -1,5 +1,5 @@
-// Exports AutomationML Editor views as vector graphics that look exactly like the editor:
-// complete trees (scrolled through), the whole window, or a dragged region.
+// Exports AutomationML Editor views as vector graphics: complete trees, the whole window,
+// or a dragged region.
 
 using System.IO;
 using System.Text;

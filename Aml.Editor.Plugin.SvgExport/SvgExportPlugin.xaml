@@ -34,7 +34,7 @@
         <StackPanel Margin="12,10,12,12">
 
             <TextBlock Style="{StaticResource Hint}"
-                       Text="Exports editor views as vector graphics that look exactly like the editor. Shortcuts work anywhere in the editor, also while this panel is closed."/>
+                       Text="Exports editor views as vector graphics: trees, attribute panels, the window or any region. Shortcuts work anywhere in the editor, also while this panel is closed."/>
 
             <!-- Export actions -->
             <TextBlock Style="{StaticResource SectionHeader}" Text="Export"/>
