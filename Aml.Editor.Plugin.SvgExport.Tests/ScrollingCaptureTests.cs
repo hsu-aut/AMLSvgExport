@@ -173,4 +173,54 @@ public class ScrollingCaptureTests
             window.Close();
         }
     });
+
+    /// <summary>
+    /// The rows below the viewport must keep their icons. WPF clips a scroll viewer that was
+    /// enlarged beyond the space of its parent to the old, small size, which silently reduced
+    /// every row below the fold to bare text.
+    /// </summary>
+    [Fact]
+    public void Keeps_the_icons_of_rows_below_the_viewport() => Sta.Run(() =>
+    {
+        var tree = new TreeView { FontFamily = new FontFamily("Segoe UI"), FontSize = 13, Background = Brushes.White };
+        const string iconColour = "#c04000";
+        for (int i = 0; i < 40; i++)
+        {
+            var header = new StackPanel { Orientation = Orientation.Horizontal };
+            header.Children.Add(new System.Windows.Shapes.Rectangle
+            {
+                Width = 10, Height = 10,
+                Fill = new SolidColorBrush(Color.FromRgb(0xc0, 0x40, 0x00)),
+            });
+            header.Children.Add(new TextBlock { Text = $"Element_{i:000}", Margin = new Thickness(4, 0, 0, 0) });
+            tree.Items.Add(new TreeViewItem { Header = header });
+        }
+
+        var window = new Window
+        {
+            Width = 260, Height = 220, Content = tree,
+            WindowStyle = WindowStyle.None, ShowInTaskbar = false, ShowActivated = false,
+            Left = -3000, Top = -3000,
+        };
+        window.Show();
+        window.UpdateLayout();
+        try
+        {
+            var sv = ScrollingCapture.FindTreeScrollViewer(tree)!;
+            Assert.True(sv.ExtentHeight > sv.ViewportHeight * 3, "scene must need scrolling");
+            var visibleRows = (int)(sv.ViewportHeight / 20);
+
+            var svg = RunOnDispatcher(() => ScrollingCapture.CaptureAsync(
+                window, sv, new FrameworkElement[] { tree }, new SvgCaptureOptions(), new StringBuilder()))[0];
+
+            var icons = XDocument.Parse(svg).Descendants(Svg + "path")
+                .Count(p => p.Attribute("fill")?.Value == iconColour);
+            Assert.True(icons > visibleRows * 2, $"only {icons} of 40 icons survived, viewport held about {visibleRows} rows");
+            Assert.Equal(40, icons);
+        }
+        finally
+        {
+            window.Close();
+        }
+    });
 }

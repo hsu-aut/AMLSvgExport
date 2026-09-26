@@ -60,7 +60,9 @@ public sealed class VisualSvgWriter
     private readonly StringBuilder _body = new();
     private readonly StringBuilder _adornerLayer = new(); // unclipped adorners, painted above the areas
     private readonly StringBuilder _textLayer = new();   // owned text of all areas, painted last
-    private readonly Dictionary<(Rect, Geometry?), string> _clipIds = new();
+    // Keyed by content, not by geometry instance: every row brings its own equal clip object.
+    private readonly Dictionary<Rect, string> _rectClipIds = new();
+    private readonly Dictionary<(Rect, string), string> _clipIds = new();
     private int _idCounter;
 
     // State of the area being captured.
@@ -131,7 +133,7 @@ public sealed class VisualSvgWriter
 
     public void Begin()
     {
-        _defs.Clear(); _body.Clear(); _adornerLayer.Clear(); _textLayer.Clear(); _clipIds.Clear();
+        _defs.Clear(); _body.Clear(); _adornerLayer.Clear(); _textLayer.Clear(); _clipIds.Clear(); _rectClipIds.Clear();
         Unsupported.Clear(); HostedContents.Clear(); ContentBounds = Rect.Empty; _idCounter = 0;
     }
 
@@ -149,8 +151,9 @@ public sealed class VisualSvgWriter
     /// <param name="adorners">How adorners in the area are captured.</param>
     /// <param name="onlyWithin">
     /// When set, only these subtrees are drawn. Their ancestors contribute neither drawings nor
-    /// clips, so a subtree that was temporarily made larger than its parent is captured in full
-    /// without the elements it now overlaps.
+    /// clips, and neither does the clip on such a subtree itself, so a subtree that was
+    /// temporarily made larger than its parent is captured in full without the elements it now
+    /// overlaps.
     /// </param>
     public void AddArea(Visual captureRoot, Rect area, Point placeAt, Rect? textOwnArea = null,
         AdornerCapture adorners = AdornerCapture.AsRendered, IReadOnlyCollection<Visual>? onlyWithin = null)
@@ -175,7 +178,7 @@ public sealed class VisualSvgWriter
         _clipRect = area;
         _clipGeometry = null;
         _opacity = 1;
-        _clipIds.Clear();   // clip ids are only valid for one placement
+        _clipIds.Clear(); _rectClipIds.Clear();   // clip ids are only valid for one placement
 
         WriteVisual(captureRoot, Matrix.Identity, isRoot: true);
 
@@ -287,7 +290,10 @@ public sealed class VisualSvgWriter
             _clipRect = new Rect(-1e7, -1e7, 2e7, 2e7);
             _clipGeometry = null;
         }
-        var clip = _inUnclippedAdorner ? null : VisualTreeHelper.GetClip(visual);
+        // A subtree named in onlyWithin was possibly enlarged beyond the space its parent grants
+        // it. WPF keeps clipping it to that old space, which would drop everything below the part
+        // that was visible before, so the clip of such a root is left out.
+        var clip = _inUnclippedAdorner || startsIncluded ? null : VisualTreeHelper.GetClip(visual);
         if (clip != null && !PushClip(clip)) { _inIncluded = wasIncluded; _inUnclippedAdorner = wasUnclipped; RestoreState(saved); return; }
 
         var drawing = VisualTreeHelper.GetDrawing(visual);
@@ -622,23 +628,26 @@ public sealed class VisualSvgWriter
     /// <summary>Clip path of the current clip state, in output document coordinates.</summary>
     private string ClipId()
     {
-        var key = (_clipRect, _clipGeometry);
+        var rect = Rect.Transform(_clipRect, _placement);
+        if (!_rectClipIds.TryGetValue(rect, out var rectId))
+        {
+            rectId = NextId("clip");
+            var (rectData, _, _) = From(new RectangleGeometry(rect));
+            _defs.Append($"<clipPath id=\"{rectId}\" clipPathUnits=\"userSpaceOnUse\"><path d=\"{rectData}\"/></clipPath>\n");
+            _rectClipIds[rect] = rectId;
+        }
+        if (_clipGeometry == null) return rectId;
+
+        var (data, evenOdd, transform) = From(_clipGeometry);
+        var matrix = MatrixAttr((transform ?? Matrix.Identity) * _placement);
+        var key = (rect, $"{data}|{matrix}|{evenOdd}");
         if (_clipIds.TryGetValue(key, out var id)) return id;
 
-        var rectId = NextId("clip");
-        var (rectData, _, _) = From(new RectangleGeometry(Rect.Transform(_clipRect, _placement)));
-        _defs.Append($"<clipPath id=\"{rectId}\" clipPathUnits=\"userSpaceOnUse\"><path d=\"{rectData}\"/></clipPath>\n");
-        id = rectId;
-
-        if (_clipGeometry != null)
-        {
-            id = NextId("clip");
-            var (data, evenOdd, transform) = From(_clipGeometry);
-            _defs.Append($"<clipPath id=\"{id}\" clipPathUnits=\"userSpaceOnUse\" clip-path=\"url(#{rectId})\"><path d=\"{(data.Length == 0 ? "M0,0" : data)}\"");
-            _defs.Append($" transform=\"{MatrixAttr((transform ?? Matrix.Identity) * _placement)}\"");
-            if (evenOdd) _defs.Append(" clip-rule=\"evenodd\"");
-            _defs.Append("/></clipPath>\n");
-        }
+        id = NextId("clip");
+        _defs.Append($"<clipPath id=\"{id}\" clipPathUnits=\"userSpaceOnUse\" clip-path=\"url(#{rectId})\"><path d=\"{(data.Length == 0 ? "M0,0" : data)}\"");
+        _defs.Append($" transform=\"{matrix}\"");
+        if (evenOdd) _defs.Append(" clip-rule=\"evenodd\"");
+        _defs.Append("/></clipPath>\n");
 
         _clipIds[key] = id;
         return id;
