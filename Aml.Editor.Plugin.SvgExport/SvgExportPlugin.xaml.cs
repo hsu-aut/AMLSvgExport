@@ -196,17 +196,24 @@ public partial class SvgExportPlugin : PluginViewBase, IToolBarIntegration
 
     // ── Feedback ────────────────────────────────────────────────────────────
 
-    private void SetBusy(string? message)
+    /// <param name="waitCursor">
+    /// False while the user is expected to act, e.g. dragging the region rectangle: the wait
+    /// cursor would replace the cross of the overlay.
+    /// </param>
+    private void SetBusy(string? message, bool waitCursor = true)
     {
         _exporting = message != null;
         ActionGrid.IsEnabled = !_exporting;
         CommandManager.InvalidateRequerySuggested();
+        // A large tree keeps the editor busy for a while: every row has to be laid out before it
+        // can be vectorized. The wait cursor is the only sign of life during that layout pass.
+        Mouse.OverrideCursor = _exporting && waitCursor ? Cursors.Wait : null;
         if (message == null) return;
 
         ResultPanel.Visibility = Visibility.Visible;
         ResultIcon.Content = Icons.Create(Icons.Refresh, 18);
         ResultTitle.Text = message;
-        ResultDetail.Text = "";
+        ResultDetail.Text = waitCursor ? "A large tree can take a moment." : "";
         ResultButtons.Visibility = Visibility.Collapsed;
     }
 
@@ -279,7 +286,7 @@ public partial class SvgExportPlugin : PluginViewBase, IToolBarIntegration
         if (_exporting) return;
         try
         {
-            SetBusy("Drag a rectangle over the editor…");
+            SetBusy("Drag a rectangle over the editor…", waitCursor: false);
             var region = await RegionPicker.PickAsync(window);
             if (region == null) { ShowResult("Region export cancelled", null, null, isError: false, editor: null); return; }
 
