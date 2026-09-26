@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.2
+
+- Rows below the visible area keep their icons, expander triangles and row backgrounds. WPF
+  clips a scroll area that was enlarged beyond the space of its parent to the old, small size,
+  so everything below the fold came out as bare text with link lines.
+- PDF and PNG are rendered with Edge's current headless mode. The old switch is ignored by
+  recent Edge versions, which wrote no file at all and reported no error.
+- Fewer clip definitions in the SVG: identical clips are written once instead of once per row.
+- Wait cursor and a note while a large tree is being laid out for the export.
+
 ## 0.8.1
 
 First public release.
