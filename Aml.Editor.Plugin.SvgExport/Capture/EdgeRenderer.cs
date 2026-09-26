@@ -54,7 +54,9 @@ public static class EdgeRenderer
         if (edge == null) return false;
         var profile = Path.Combine(Path.GetTempPath(), "svgexport_edge_profile");
         var psi = new ProcessStartInfo(edge,
-            $"--headless --disable-gpu --no-first-run --no-default-browser-check --user-data-dir=\"{profile}\" {arguments} \"{new Uri(htmlPath).AbsoluteUri}\"")
+            // "--headless=new": the old switch is ignored by current Edge versions and writes
+            // nothing at all, without an error.
+            $"--headless=new --disable-gpu --no-first-run --no-default-browser-check --user-data-dir=\"{profile}\" {arguments} \"{new Uri(htmlPath).AbsoluteUri}\"")
         {
             UseShellExecute = false, CreateNoWindow = true,
         };
