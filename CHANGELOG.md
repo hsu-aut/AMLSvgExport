@@ -9,6 +9,7 @@
   recent Edge versions, which wrote no file at all and reported no error.
 - Fewer clip definitions in the SVG: identical clips are written once instead of once per row.
 - Wait cursor and a note while a large tree is being laid out for the export.
+- The activity log reports the captured size of a tree, not only the frame around it.
 
 ## 0.8.1
 

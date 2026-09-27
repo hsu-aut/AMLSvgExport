@@ -627,7 +627,7 @@ public partial class SvgExportPlugin : PluginViewBase, IToolBarIntegration
     private void LogReport(StringBuilder report)
     {
         foreach (var line in report.ToString().Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries)
-                     .Where(l => l.StartsWith("Scroll") || l.StartsWith("Frame") || l.StartsWith("Area") || l.StartsWith("Hosted") || l.StartsWith("This panel") || l.StartsWith("No ")))
+                     .Where(l => l.StartsWith("Tree capture") || l.StartsWith("Scroll") || l.StartsWith("Frame") || l.StartsWith("Area") || l.StartsWith("Hosted") || l.StartsWith("This panel") || l.StartsWith("No ")))
             Log("  " + line);
     }
 
