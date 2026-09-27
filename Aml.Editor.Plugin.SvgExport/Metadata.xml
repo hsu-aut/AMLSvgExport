@@ -3,7 +3,7 @@
                        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <PackageName>Aml.Editor.Plugin.SvgExport</PackageName>
   <DisplayName>SvgExport</DisplayName>
-  <Version>0.8.1</Version>
+  <Version>0.8.2</Version>
   <Author>Hamied Nabizada</Author>
   <Description>AutomationML Editor plugin that exports trees, attribute panels, the window or any region as vector graphics (SVG, PDF, PNG) for papers and slides. Shortcuts: Ctrl+Shift+E complete tree, Ctrl+Shift+K tree to clipboard, Ctrl+Shift+W whole window, Ctrl+Shift+R drag a region. Options in the SvgExport panel.</Description>
   <MinimumEditorVersion>6.4.0.0</MinimumEditorVersion>
