@@ -102,6 +102,14 @@
                 <TextBox x:Name="StatusLog" IsReadOnly="True" TextWrapping="Wrap" Height="180" Margin="0,6,0,0"
                          VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11"/>
             </Expander>
+
+            <!-- Where to report a problem or look up what the export can do. -->
+            <TextBlock Style="{StaticResource Hint}" Margin="0,12,0,0" FontSize="11">
+                <Run x:Name="VersionRun"/><Run Text=" · "/><Hyperlink x:Name="ProjectLink"
+                    NavigateUri="https://github.com/hsu-aut/AMLSvgExport"
+                    RequestNavigate="ProjectLink_RequestNavigate"
+                    ToolTip="Documentation, releases and issue tracker">github.com/hsu-aut/AMLSvgExport</Hyperlink>
+            </TextBlock>
         </StackPanel>
     </ScrollViewer>
 </aml:PluginViewBase>

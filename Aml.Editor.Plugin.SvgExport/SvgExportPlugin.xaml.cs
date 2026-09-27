@@ -137,6 +137,8 @@ public partial class SvgExportPlugin : PluginViewBase, IToolBarIntegration
             ActionGrid.Children.Add(button);
         }
 
+        VersionRun.Text = "AML SVG Export " + (typeof(SvgExportPlugin).Assembly.GetName().Version?.ToString(3) ?? "");
+
         RefreshButton.Content = Icons.Create(Icons.Refresh, 14);
         OpenFileButton.Content = Icons.WithLabel(Icons.File, "Open");
         ShowInFolderButton.Content = Icons.WithLabel(Icons.Folder, "Show in folder");
@@ -184,6 +186,19 @@ public partial class SvgExportPlugin : PluginViewBase, IToolBarIntegration
     }
 
     private void RefreshButton_Click(object sender, RoutedEventArgs e) => RefreshTrees(prefer: SelectedTree?.Tree);
+
+    private void ProjectLink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+    {
+        e.Handled = true;
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            Log($"Could not open {e.Uri}: {ex.Message}");
+        }
+    }
 
     private void OpenFileButton_Click(object sender, RoutedEventArgs e) { if (_lastFile != null) Toast.Open(_lastFile); }
 
